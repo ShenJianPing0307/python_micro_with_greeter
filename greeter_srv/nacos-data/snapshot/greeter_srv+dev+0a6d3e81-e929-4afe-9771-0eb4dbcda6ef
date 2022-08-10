@@ -1,0 +1,8 @@
+{
+    "CONSUL_HOST":"192.168.111.5",
+    "CONSUL_PORT":8500,
+    "ADDRESS_IP":"192.168.0.118",
+    "ADDRESS_PORT":50051,
+    "SERVICE_NAME":"greeter_srv",
+    "SERVICE_TAGS":["srv"]
+}

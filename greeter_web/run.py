@@ -1,14 +1,14 @@
-import initialize
 import config
+from initialize import app
 import utils
 import uuid
 from loguru import logger
 import sys
-
+from config import config
+from initialize import init_app
 
 def run():
-    # 初始化app
-    app = initialize.init_app()
+    app = init_app()
 
     # 服务注册
     register_client = utils.Consul(config.CONSUL_HOST, config.CONSUL_PORT)
@@ -19,11 +19,7 @@ def run():
         sys.exit(0)
 
     logger.info(f"服务注册成功")
-
-    # 启动服务与健康检查
     app.run(host=config.SERVICE_HOST, port=config.SERVICE_PORT)
-
-    # 接收终止信号
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import config
 import grpc
 from utils.consul import Consul
 from loguru import logger
+from utils.grpc_interceptor.retry import RetryInterceptor
 
 
 def init_srv_conn():
@@ -18,5 +19,8 @@ def init_srv_conn():
     if not greeter_channel:
         logger.info(f"连接{config.CONSUL_FILTER_VALUE}服务失败")
         return
-
-    return greeter_channel
+    # 超时机制，使用拦截器进行包装channel,RetryInterceptor中retry_timeout_ms可以设置重试时间
+    retry_codes = [grpc.StatusCode.UNKNOWN, grpc.StatusCode.UNAVAILABLE, grpc.StatusCode.DEADLINE_EXCEEDED]
+    retry_interceptor = RetryInterceptor(retry_codes=retry_codes)
+    interceptor_channel = grpc.intercept_channel(greeter_channel, retry_interceptor)
+    return interceptor_channel
