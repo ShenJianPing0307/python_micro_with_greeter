@@ -18,6 +18,11 @@
 - 通过grpc中的拦截器实现
 - 在web层进行实现
 
+### （四）链路追踪
+
+- 通过jaeger实现
+- web层通过grpc调用srv层
+
 ## 二、服务组件安装与启动
 
 ### （一）consul
@@ -45,4 +50,26 @@
 > linux系统：sh startup.sh -m standalone
 >
 > 默认启动端口：8848
+
+### （三）RetryInterceptor
+
+超时重试通过拦截器实现，可使用github上现有的开源项目：https://github.com/mlorenzana/py-grpc-retry-interceptor
+
+### （四）jaeger与grpc组合
+
+> 安装Python版本的jaeger操作库：https://github.com/jaegertracing/jaeger-client-python
+>
+> ```powershell
+> pip install jaeger-client
+> ```
+>
+> 上述是普通的追踪，比如http请求，调用函数之类的操作，但是grpc的调用，还需要依赖下面的库：
+>
+> python-grpc库：https://github.com/opentracing-contrib/python-grpc
+>
+> ```powershell
+> pip install grpcio-opentracing
+> ```
+>
+>
 

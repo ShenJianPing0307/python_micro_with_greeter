@@ -4,7 +4,7 @@ from handler.helloworld import Greeter
 from common.register.consul import consul
 from settings import settings
 
-from common.grpc_health.v1 import health_pb2, health_pb2_grpc, health
+from common.grpc_health.v1 import health_pb2_grpc, health
 
 import grpc
 from loguru import logger
@@ -13,6 +13,11 @@ from functools import partial
 import sys
 import signal
 
+from common.grpc_opentracing import open_tracing_server_interceptor
+from common.grpc_opentracing.grpcext import intercept_server
+from common.tracing.tracer import init_global_tracer
+
+
 def on_exit(signo, frame, service_id):
     register = consul.ConsulRegister(settings.CONSUL_HOST, settings.CONSUL_PORT)
     logger.info(f"注销 {service_id} 服务")
@@ -20,8 +25,14 @@ def on_exit(signo, frame, service_id):
     logger.info("注销成功")
     sys.exit(0)
 
+
 def server():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+
+    # 链路追踪
+    init_global_tracer()  # 初始化全局变量tracer
+    tracing_interceptor = open_tracing_server_interceptor(settings.JAEGER_TRACER)
+    server = intercept_server(server, tracing_interceptor)
 
     # 注册helloword服务
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
@@ -33,8 +44,6 @@ def server():
 
     server.start()
 
-
-
     logger.info(f"服务注册开始")
 
     import uuid
@@ -43,7 +52,8 @@ def server():
     register = consul.ConsulRegister(settings.CONSUL_HOST, settings.CONSUL_PORT)
 
     if not register.register(name=settings.SERVICE_NAME, id=service_id,
-                             address=settings.ADDRESS_IP, port=settings.ADDRESS_PORT, tags=settings.SERVICE_TAGS, check=None):
+                             address=settings.ADDRESS_IP, port=settings.ADDRESS_PORT, tags=settings.SERVICE_TAGS,
+                             check=None):
         logger.info(f"服务注册失败")
         sys.exit(0)
 
