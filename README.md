@@ -23,11 +23,31 @@
 - 通过jaeger实现
 - web层通过grpc调用srv层
 
+### （五）熔断
+
+当访问出现一定错误的次数产生熔断，服务暂时不可用，避免服务雪崩。
+
+可使用如下的库：https://github.com/danielfm/pybreaker
+
 ## 二、服务组件安装与启动
 
 ### （一）consul
 
-...
+- 作为服务注册和发现使用
+
+>项目地址：https://github.com/hashicorp/consul
+>
+>python sdk地址：https://github.com/poppyred/python-consul2
+
+- 安装
+
+>下载指定版本：https://github.com/hashicorp/consul/releases
+
+- 启动
+
+>windows/linux：consul agent -dev -ui -node=consul-dev -client=0.0.0.0
+>
+>默认启动端口：8500
 
 ### （二）nacos
 
@@ -71,5 +91,12 @@
 > pip install grpcio-opentracing
 > ```
 >
->
+>默认启动端口：16686
 
+### （五）熔断库的安装
+
+```powershell
+ pip install pybreaker
+```
+
+详细使用见： https://github.com/danielfm/pybreaker#usage

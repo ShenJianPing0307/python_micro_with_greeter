@@ -25,8 +25,8 @@ def on_exit(signo, frame, service_id):
     logger.info("注销成功")
     sys.exit(0)
 
-
 def server():
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     # 链路追踪
