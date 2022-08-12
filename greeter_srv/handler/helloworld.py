@@ -3,8 +3,6 @@ from proto import helloworld_pb2
 import time
 import random
 from settings import settings
-from common.srv_breaker.init_breaker import breaker
-
 
 
 def second_tracing_business():
@@ -14,7 +12,6 @@ def second_tracing_business():
 # 被调用的函数还可以继续追加链路追踪
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
 
-    @breaker # 添加全局熔断器
     def SayHello(self, request, context):
         # web层调用srv层的SayHello，然后再调用这个span，通过context找到父span
         with settings.JAEGER_TRACER.start_span('second_business',
