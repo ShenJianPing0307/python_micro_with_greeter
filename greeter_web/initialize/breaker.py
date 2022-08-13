@@ -1,4 +1,5 @@
 import pybreaker
+from config import config
 
 
 # 可以在熔断器上添加侦听器，如果出现熔断，会被侦听到
@@ -25,5 +26,5 @@ class FuncListener(pybreaker.CircuitBreakerListener):
 # 熔断机制
 # 在60s内请求错误次数达到5次,进行熔断
 # 通过模块的方式导出,成为一个单例，全局使用
-breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=60)
+breaker = pybreaker.CircuitBreaker(fail_max=config.FAIL_MAX, reset_timeout=config.RESET_TIMEOUT)
 breaker.add_listeners(FuncListener(),)
