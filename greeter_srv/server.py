@@ -13,10 +13,6 @@ from functools import partial
 import sys
 import signal
 
-from common.grpc_opentracing import open_tracing_server_interceptor
-from common.grpc_opentracing.grpcext import intercept_server
-from common.tracing.tracer import init_global_tracer
-
 
 def on_exit(signo, frame, service_id):
     register = consul.ConsulRegister(settings.CONSUL_HOST, settings.CONSUL_PORT)
@@ -29,10 +25,6 @@ def server():
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
-    # 链路追踪
-    init_global_tracer()  # 初始化全局变量tracer
-    tracing_interceptor = open_tracing_server_interceptor(settings.JAEGER_TRACER)
-    server = intercept_server(server, tracing_interceptor)
 
     # 注册helloword服务
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)

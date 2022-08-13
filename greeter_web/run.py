@@ -1,5 +1,4 @@
 import config
-from initialize import app
 import utils
 import uuid
 from loguru import logger
